@@ -1,33 +1,33 @@
-const books = [
-    {
-        title: 'The Awakening',
-        author: 'Kate Chopin',
-    },
-    {
-        title: 'City of Glass',
-        author: 'Paul Auster',
-    },
-];
+// const faker = require('faker');
+import faker from 'faker';
 
-const user = {
-    id: 'id123',
-    name: 'userName',
-    age: '26',
-    employed: false,
-    gpa: null,
+const createUser = () => {
+  const firstName = faker.name.firstName();
+  return {
+    id: faker.random.uuid,
+    name: firstName,
+    email: faker.internet.email(firstName),
+    age: faker.random.boolean() ? faker.random.number(100) : null,
+  }
 }
 
-const product = {
-    id: 'id222',
-    title: 'title',
-    price: 23.3,
-    releaseYear: 1994,
-    rating: 3.4,
-    inStock: true,
+
+const createPost = () => {
+  return {
+    id: faker.random.uuid,
+    title: faker.lorem.sentence(),
+    body: faker.lorem.text(),
+    published:  faker.random.boolean(),
+  }
 }
+
+const createUsers = (numUsers) => [...Array(numUsers).fill(null).map(() => createUser())];
+const createPosts = (numPosts) => [...Array(numPosts).fill(null).map(() => createPost())];
 
 export {
-    books,
-    user,
-    product,
+  createUser,
+  createPost,
+  createUsers,
+  createPosts,
 }
+
