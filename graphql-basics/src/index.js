@@ -1,14 +1,16 @@
 import 'dotenv/config';
-const { ApolloServer, gql } = require('apollo-server');
+import { v4 as uuidv4 } from 'uuid'
+const { ApolloServer, gql, AuthenticationError } = require('apollo-server');
+
 import {
   NUM_USERS, 
   NUM_POSTS,
   NUM_COMMENTS,
-  createUser, 
-  createPost, 
-  createUsers, 
-  createPosts,
-  createComments,
+  createFakeUser, 
+  createFakePost, 
+  createFakeUsers, 
+  createFakePosts,
+  createFakeComments,
 } from './dataModule';
 
 const typeDefs = gql`
@@ -18,6 +20,12 @@ const typeDefs = gql`
     users(query: String): [User!]!,
     posts(query: String): [Post!]!,
     comments(query: String): [Comment!]!,
+  }
+
+  type Mutation {
+    createUser(name: String!, email: String!, age: Int): User!,
+    createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!,
+    createComment(text: String!, author: ID!, post: ID!): Comment!,
   }
 
   type User {
@@ -46,14 +54,18 @@ const typeDefs = gql`
   }
 `;
 
-const users = createUsers(NUM_USERS);
-const posts = createPosts(NUM_POSTS);
-const comments = createComments(NUM_COMMENTS);
+const users = createFakeUsers(NUM_USERS);
+const posts = createFakePosts(NUM_POSTS);
+const comments = createFakeComments(NUM_COMMENTS);
+
+const checkEmailTaken = (email) => users.some((user) => user.email === email);
+const checkUserExists = (author) => users.some((user) => Number(user.id) === Number(author));
+const checkPostExistsAndPublished = (post) => posts.some((post) => Number(post.id) === Number(post)) || !post.published;
 
 const resolvers = {
   Query: {
-    me: () => createUser(),
-    post: () => createPost(),
+    me: () => createFakeUser(),
+    post: () => createFakePost(),
     users: (parent, { query }, ctx, info) => {
       if (query) {
         const isNameMatched = users.filter((user) => user.name.toLowerCase().includes(query.toLowerCase()));
@@ -78,6 +90,64 @@ const resolvers = {
       }
       return comments;
     }
+  },
+  Mutation: {
+    createUser: (parent, { name, email, age }, ctx, info) => {
+      const emailTaken = checkEmailTaken(email);
+
+      if (emailTaken) {
+        throw new Error('Email taken.')
+      };
+
+      const newUser = {
+        id: uuidv4(),
+        name: name,
+        email: email,
+        age: age,
+      };
+
+      users.push(newUser);
+
+      return newUser;
+    },
+    createPost: (parent, { title, body, published, author }, ctx, info) => {
+      const userValid = checkUserExists(author);
+
+      if (!userValid) {
+        throw new Error('User not found!')
+      };
+
+      const newPost = {
+        id: uuidv4(),
+        title: title,
+        body: body,
+        published: published,
+        author: Number(author),
+      };
+
+      posts.push(newPost);
+
+      return newPost;
+    },
+    createComment: (parent, { text, author, post }, ctx, info) => {
+      const userValid = checkUserExists(author);
+      const postValid = checkPostExistsAndPublished(post);
+
+      if (!userValid || !postValid) {
+        throw new Error('Unable to find user and post!');
+      };
+
+      const newComment = {
+        id: uuidv4(),
+        text: text,
+        author: Number(author),
+        post: Number(post),
+      }
+
+      comments.push(newComment);
+      
+      return newComment;
+    },
   },
   User: {
     posts: (parent, args, ctx, info) => posts.filter((post) => post.author === parent.id),

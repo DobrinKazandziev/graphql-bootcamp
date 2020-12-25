@@ -1,8 +1,8 @@
 // const faker = require('faker');
 import faker from 'faker';
 
-const NUM_USERS = 2;
-const NUM_POSTS = 6;
+const NUM_USERS = 3;
+const NUM_POSTS = 5;
 const NUM_COMMENTS = 10;
 
 const randomNumArbitrary = (min, max) => {
@@ -11,7 +11,7 @@ const randomNumArbitrary = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const createUser = (idx) => {
+const createFakeUser = (idx) => {
   const firstName = faker.name.firstName();
   return {
     id: idx,
@@ -21,7 +21,7 @@ const createUser = (idx) => {
   }
 }
 
-const createPost = (idx) => {
+const createFakePost = (idx) => {
   return {
     id: idx,
     title: faker.lorem.sentence(),
@@ -31,7 +31,7 @@ const createPost = (idx) => {
   }
 }
 
-const createComment = (idx) => {
+const createFakeComment = (idx) => {
   return {
     id: idx,
     text: faker.lorem.text(),
@@ -40,16 +40,16 @@ const createComment = (idx) => {
   }
 }
 
-const createUsers = () => [...Array(NUM_USERS).fill(null).map((val, idx) => createUser(idx))];
-const createPosts = () => [...Array(NUM_POSTS).fill(null).map((val, idx) => createPost(idx))];
-const createComments = () => [...Array(NUM_COMMENTS).fill(null).map((val, idx) => createComment(idx))];
+const createFakeUsers = () => [...Array(NUM_USERS).fill(null).map((val, idx) => createFakeUser(idx))];
+const createFakePosts = () => [...Array(NUM_POSTS).fill(null).map((val, idx) => createFakePost(idx))];
+const createFakeComments = () => [...Array(NUM_COMMENTS).fill(null).map((val, idx) => createFakeComment(idx))];
 
 export {
   NUM_USERS,
   NUM_POSTS,
-  createUser,
-  createPost,
-  createUsers,
-  createPosts,
-  createComments,
+  createFakeUser,
+  createFakePost,
+  createFakeUsers,
+  createFakePosts,
+  createFakeComments,
 }
