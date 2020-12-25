@@ -3,6 +3,7 @@ import faker from 'faker';
 
 const NUM_USERS = 2;
 const NUM_POSTS = 6;
+const NUM_COMMENTS = 10;
 
 const randomNumArbitrary = (min, max) => {
   min = Math.ceil(min);
@@ -30,8 +31,18 @@ const createPost = (idx) => {
   }
 }
 
+const createComment = (idx) => {
+  return {
+    id: idx,
+    text: faker.lorem.text(),
+    author: randomNumArbitrary(0, NUM_USERS-1),
+    post: randomNumArbitrary(0, NUM_POSTS-1),
+  }
+}
+
 const createUsers = () => [...Array(NUM_USERS).fill(null).map((val, idx) => createUser(idx))];
 const createPosts = () => [...Array(NUM_POSTS).fill(null).map((val, idx) => createPost(idx))];
+const createComments = () => [...Array(NUM_COMMENTS).fill(null).map((val, idx) => createComment(idx))];
 
 export {
   NUM_USERS,
@@ -40,4 +51,5 @@ export {
   createPost,
   createUsers,
   createPosts,
+  createComments,
 }

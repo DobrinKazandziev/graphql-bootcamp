@@ -1,6 +1,15 @@
 import 'dotenv/config';
 const { ApolloServer, gql } = require('apollo-server');
-import { NUM_USERS, NUM_POSTS, createUser, createPost, createUsers, createPosts } from './dataModule';
+import {
+  NUM_USERS, 
+  NUM_POSTS,
+  NUM_COMMENTS,
+  createUser, 
+  createPost, 
+  createUsers, 
+  createPosts,
+  createComments,
+} from './dataModule';
 
 const typeDefs = gql`
   type Query {
@@ -8,6 +17,7 @@ const typeDefs = gql`
     post: Post!,
     users(query: String): [User!]!,
     posts(query: String): [Post!]!,
+    comments(query: String): [Comment!]!,
   }
 
   type User {
@@ -16,6 +26,7 @@ const typeDefs = gql`
     email: String!,
     age: Int,
     posts: [Post!]!,
+    comments: [Comment!]!,
   }
 
   type Post {
@@ -24,11 +35,20 @@ const typeDefs = gql`
     body: String!,
     published: Boolean!,
     author: User!,
+    comments: [Comment!]!,
+  }
+
+  type Comment {
+    id: ID!,
+    text: String!,
+    author: User!,
+    post: Post!,
   }
 `;
 
 const users = createUsers(NUM_USERS);
 const posts = createPosts(NUM_POSTS);
+const comments = createComments(NUM_COMMENTS);
 
 const resolvers = {
   Query: {
@@ -41,7 +61,7 @@ const resolvers = {
       }
       return users;
     },
-    posts: (partent, { query }, ctx, info) => {
+    posts: (parent, { query }, ctx, info) => {
       if (query) {
         return posts.filter((post) => {
           const isTitleMatched = post.title.toLowerCase().includes(query.toLowerCase());
@@ -50,13 +70,26 @@ const resolvers = {
         });
       }
       return posts;
+    },
+    comments: (parent, { query }, ctx, info) => {
+      if (query) {
+        const isCommentMatched = comments.filter((comment) => comment.text.toLowerCase().includes(query.toLowerCase()));
+        return isCommentMatched;
+      }
+      return comments;
     }
-  },
-  Post: {
-    author: (parent, args, ctx, info) => users.find((user) => user.id === parent.author),
   },
   User: {
     posts: (parent, args, ctx, info) => posts.filter((post) => post.author === parent.id),
+    comments: (parent, args, ctx, info) => comments.filter((comment) => comment.author === parent.id)
+  },
+  Post: {
+    author: (parent, args, ctx, info) => users.find((user) => user.id === parent.author),
+    comments: (parent, args, ctx, info) => comments.filter((comment) => comment.post === parent.id),
+  },
+  Comment: {
+    author: (parent, args, ctx, info) => users.find((user) => user.id === parent.author),
+    post: (parent, args, ctx, info) => posts.find((post) => post.id === parent.post),
   }
 };
 
