@@ -6,13 +6,31 @@ const Mutation = {
     const emailTaken = utils.checkEmailTaken(data.email, db.users);
 
     if (emailTaken) {
-      throw new Error('Email taken.')
+      throw new Error('Email taken!');
     };
 
     const newUser = { id: uuidv4(), ...data }; //  { name, email, age } = args.data;
     db.users.push(newUser);
 
     return newUser;
+  },
+  updateUser: (parent, { id, data }, { db }, info) => {
+    const userIndex = db.users.findIndex((user) => user.id === id);
+
+    if (userIndex === -1) {
+      throw new Error('User not found!');
+    };
+    if (data.email && utils.checkUserExists(data.email, db.users)) {
+      throw new Error('Email already in use!');
+    };
+
+    const updatedUser = {
+      ...db.users[userIndex],
+      ...data,
+    };
+    
+    db.users[userIndex] = updatedUser;
+    return updatedUser;
   },
   deleteUser: (parent, { id }, { db }, info) => {
     const userIndex = db.users.findIndex((user) => user.id === id);
@@ -49,6 +67,21 @@ const Mutation = {
 
     return newPost;
   },
+  updatePost: (parent, { id, data }, { db }, info) => {
+    const postIndex = db.posts.findIndex((post) => post.id === id);
+
+    if (postIndex === -1) {
+      throw new Error('User not found!');
+    };
+
+    const postUpdated = {
+      ...db.posts[postIndex],
+      ...data,
+    };
+
+    db.posts[postIndex] = postUpdated;
+    return postUpdated;
+  },
   deletePost: (parent, { id }, { db }, info) => {
     const postIndex = db.posts.findIndex((post) => post.id === id);
 
@@ -73,6 +106,21 @@ const Mutation = {
     db.comments.push(newComment);
     
     return newComment;
+  },
+  updateComment: (parent, { id, data }, { db }, info) => {
+    const commentIndex = db.comments.findIndex((comment) => comment.id === id);
+
+    if (commentIndex === -1) {
+      throw new Error('Comment not found!');
+    };
+
+    const commentUpdated = {
+      ...db.comments[commentIndex],
+      ...data,
+    };
+
+    db.comments[commentIndex] = commentUpdated;
+    return commentUpdated;
   },
   deleteComment: (parent, { id }, { db }, info) => {
     const commentIndex = db.comments.findIndex((comment) => comment.id === id);
