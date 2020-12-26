@@ -8,13 +8,13 @@ const NUM_COMMENTS = 10;
 const randomNumArbitrary = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return (Math.floor(Math.random() * (max - min + 1)) + min).toString();
 };
 
 const createFakeUser = (idx) => {
   const firstName = faker.name.firstName();
   return {
-    id: idx,
+    id: idx.toString(),
     name: firstName,
     email: faker.internet.email(firstName),
     age: faker.random.boolean() ? faker.random.number(100) : null,
@@ -23,7 +23,7 @@ const createFakeUser = (idx) => {
 
 const createFakePost = (idx) => {
   return {
-    id: idx,
+    id: idx.toString(),
     title: faker.lorem.sentence(),
     body: faker.lorem.text(),
     published: faker.random.boolean(),
@@ -33,7 +33,7 @@ const createFakePost = (idx) => {
 
 const createFakeComment = (idx) => {
   return {
-    id: idx,
+    id: idx.toString(),
     text: faker.lorem.text(),
     author: randomNumArbitrary(0, NUM_USERS-1),
     post: randomNumArbitrary(0, NUM_POSTS-1),
