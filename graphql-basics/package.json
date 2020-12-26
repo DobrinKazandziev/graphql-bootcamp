@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node src/index.js",
+    "start": "nodemon src/index.js --exec babel-node --ext js,graphql",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -26,6 +26,7 @@
     "dotenv": "^8.2.0",
     "faker": "^5.1.0",
     "graphql": "^15.4.0",
+    "graphql-tools": "^7.0.2",
     "uuid": "^8.3.2"
   }
 }

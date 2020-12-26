@@ -1,4 +1,3 @@
-// const faker = require('faker');
 import faker from 'faker';
 
 const NUM_USERS = 3;
@@ -18,8 +17,8 @@ const createFakeUser = (idx) => {
     name: firstName,
     email: faker.internet.email(firstName),
     age: faker.random.boolean() ? faker.random.number(100) : null,
-  }
-}
+  };
+};
 
 const createFakePost = (idx) => {
   return {
@@ -28,8 +27,8 @@ const createFakePost = (idx) => {
     body: faker.lorem.text(),
     published: faker.random.boolean(),
     author: randomNumArbitrary(0, NUM_USERS-1),
-  }
-}
+  };
+};
 
 const createFakeComment = (idx) => {
   return {
@@ -37,19 +36,22 @@ const createFakeComment = (idx) => {
     text: faker.lorem.text(),
     author: randomNumArbitrary(0, NUM_USERS-1),
     post: randomNumArbitrary(0, NUM_POSTS-1),
-  }
-}
+  };
+};
 
 const createFakeUsers = () => [...Array(NUM_USERS).fill(null).map((val, idx) => createFakeUser(idx))];
 const createFakePosts = () => [...Array(NUM_POSTS).fill(null).map((val, idx) => createFakePost(idx))];
 const createFakeComments = () => [...Array(NUM_COMMENTS).fill(null).map((val, idx) => createFakeComment(idx))];
 
+const createFakeDB = () => {
+  return {
+    users: createFakeUsers(),
+    posts: createFakePosts(),
+    comments: createFakeComments(),
+  }
+};
+
 export {
-  NUM_USERS,
-  NUM_POSTS,
+  createFakeDB as default,
   createFakeUser,
-  createFakePost,
-  createFakeUsers,
-  createFakePosts,
-  createFakeComments,
 }
